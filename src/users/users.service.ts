@@ -18,6 +18,12 @@ export class UsersService {
       if (users.length > 0) {
         this.nextId = Math.max(...users.map(u => u.id)) + 1;
       }
+      // ensure optional fields exist
+      users.forEach(user => {
+        if (!('image' in user)) {
+          user.image = undefined;
+        }
+      });
       return users;
     } catch (error) {
       return [];

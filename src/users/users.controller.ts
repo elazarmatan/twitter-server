@@ -1,15 +1,67 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  NotFoundException,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: async (req, file, cb) => {
+          const dest = join(process.cwd(), 'uploads', 'users');
+          await import('fs').then(fs => fs.promises.mkdir(dest, { recursive: true }));
+          cb(null, dest);
+        },
+        filename: (req, file, cb) => {
+          const name = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, name + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        username: { type: 'string' },
+        password: { type: 'string' },
+        phone: { type: 'string' },
+        email: { type: 'string' },
+        birthDate: { type: 'string' },
+        bio: { type: 'string' },
+        image: { type: 'string', format: 'binary' },
+      },
+      required: ['name', 'username', 'password', 'phone', 'email'],
+    },
+  })
+  async create(
+    @Body() createUserDto: CreateUserDto,
+    @UploadedFile() file?: any,
+  ) {
+    if (file) {
+      createUserDto.image = `/uploads/users/${file.filename}`;
+    }
     return await this.usersService.create(createUserDto);
   }
 
@@ -28,7 +80,46 @@ export class UsersController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: async (req, file, cb) => {
+          const dest = join(process.cwd(), 'uploads', 'users');
+          await import('fs').then(fs => fs.promises.mkdir(dest, { recursive: true }));
+          cb(null, dest);
+        },
+        filename: (req, file, cb) => {
+          const name = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, name + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        username: { type: 'string' },
+        password: { type: 'string' },
+        phone: { type: 'string' },
+        email: { type: 'string' },
+        birthDate: { type: 'string' },
+        bio: { type: 'string' },
+        image: { type: 'string', format: 'binary' },
+      },
+      // update is partial; no required fields
+    },
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() file?: any,
+  ) {
+    if (file) {
+      updateUserDto.image = `/uploads/users/${file.filename}`;
+    }
     const user = await this.usersService.update(+id, updateUserDto);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);

@@ -25,6 +25,13 @@ export class PostsService {
         if (!post.comments) {
           post.comments = [];
         }
+        // initialize optional properties so consumers don't have to check
+        if (!('tags' in post)) {
+          post.tags = [];
+        }
+        if (!('image' in post)) {
+          post.image = undefined;
+        }
       });
       return posts;
     } catch (error) {
@@ -39,16 +46,14 @@ export class PostsService {
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
     const posts = await this.readPosts();
-    const existingUser = posts.find(post => post.username === createPostDto.username);
-    if (existingUser) {
-      throw new ConflictException(`היוזר ${createPostDto.username} כבר קיים. אנא בחר שם אחר.`);
-    }
     const newPost: Post = {
       id: this.nextId++,
       username: createPostDto.username,
       description: createPostDto.description,
       likes: [],
       comments: [],
+      tags: createPostDto.tags || [],
+      image: createPostDto.image,
     };
     posts.push(newPost);
     await this.writePosts(posts);
