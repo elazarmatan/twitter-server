@@ -9,7 +9,7 @@ import { AddCommentDto } from './dto/add-comment.dto';
 import { RemoveCommentDto } from './dto/remove-comment.dto';
 @ApiTags('posts')
 @Controller('posts')
-// @UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard)
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
