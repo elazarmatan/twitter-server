@@ -9,4 +9,6 @@ export class Post {
   description: string;
   likes: string[];
   comments: Comment[];
+  image?: string;
+  tags?: string[];
 }

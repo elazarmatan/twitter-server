@@ -1,20 +1,69 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, Put, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  NotFoundException,
+  Put,
+  UseGuards,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { LikePostDto } from './dto/like-post.dto';
 import { AddCommentDto } from './dto/add-comment.dto';
 import { RemoveCommentDto } from './dto/remove-comment.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
 @ApiTags('posts')
 @Controller('posts')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  async create(@Body() createPostDto: CreatePostDto) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: async (req, file, cb) => {
+          const dest = join(process.cwd(), 'uploads', 'posts');
+          await import('fs').then(fs => fs.promises.mkdir(dest, { recursive: true }));
+          cb(null, dest);
+        },
+        filename: (req, file, cb) => {
+          const name = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, name + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        username: { type: 'string' },
+        description: { type: 'string' },
+        tags: { type: 'array', items: { type: 'string' } },
+        image: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  async create(
+    @Body() createPostDto: CreatePostDto,
+    @UploadedFile() file?: any,
+  ) {
+    if (file) {
+      createPostDto.image = `/uploads/posts/${file.filename}`;
+    }
     return await this.postsService.create(createPostDto);
   }
 
@@ -33,7 +82,40 @@ export class PostsController {
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: async (req, file, cb) => {
+          const dest = join(process.cwd(), 'uploads', 'posts');
+          await import('fs').then(fs => fs.promises.mkdir(dest, { recursive: true }));
+          cb(null, dest);
+        },
+        filename: (req, file, cb) => {
+          const name = Date.now() + '-' + Math.round(Math.random() * 1e9);
+          cb(null, name + extname(file.originalname));
+        },
+      }),
+    }),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        description: { type: 'string' },
+        tags: { type: 'array', items: { type: 'string' } },
+        image: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+    @UploadedFile() file?: any,
+  ) {
+    if (file) {
+      updatePostDto.image = `/uploads/posts/${file.filename}`;
+    }
     const post = await this.postsService.update(+id, updatePostDto);
     if (!post) {
       throw new NotFoundException(`Post with ID ${id} not found`);

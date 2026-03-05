@@ -9,5 +9,15 @@
     "birthDate": "1990-01-01",
     "bio": "Software developer passionate about technology",
     "image": "https://example.com/avatar.jpg"
+  },
+  {
+    "id": 2,
+    "name": "אלעזר מתן",
+    "username": "@elazar",
+    "phone": "0515902264",
+    "email": "elazarmata8@gmail.com",
+    "password": "$2b$10$9u5UUYv3BDEfFRoEIdxcrudbAE/sVDk6zFVjPx55DejTEhQgYGhiq",
+    "bio": "",
+    "image": "/uploads/users/1772729833733-96582865.jpg"
   }
 ]

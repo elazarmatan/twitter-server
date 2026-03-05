@@ -4,7 +4,8 @@
     "username": "@elazar",
     "description": "my post 1",
     "likes": [],
-    "comments": []
+    "comments": [],
+    "tags": []
   },
   {
     "id": 3,
@@ -18,13 +19,24 @@
         "username": "@elazar",
         "description": "זה פוסט מעניין!"
       }
-    ]
+    ],
+    "tags": []
   },
   {
     "id": 4,
     "username": "@yakov",
     "description": "my post",
     "likes": [],
-    "comments": []
+    "comments": [],
+    "tags": []
+  },
+  {
+    "id": 5,
+    "username": "@elazar",
+    "description": "kadjsj",
+    "likes": [],
+    "comments": [],
+    "tags": [],
+    "image": "/uploads/posts/1772730243496-513146691.jpg"
   }
 ]
