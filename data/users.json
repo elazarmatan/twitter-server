@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "name": "John Doe",
+    "username": "@johndoe",
+    "phone": "+1234567890",
+    "email": "john@example.com",
+    "password": "$2b$10$6vjw.867ZFucC7PCmJqE1OnGqU.NRv5D3YlfCd4uRR5IjxB5P..la",
+    "birthDate": "1990-01-01",
+    "bio": "Software developer passionate about technology",
+    "image": "https://example.com/avatar.jpg"
+  }
+]

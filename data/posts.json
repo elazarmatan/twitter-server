@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "username": "@elazar",
+    "description": "my post 1",
+    "likes": [],
+    "comments": []
+  },
+  {
+    "id": 3,
+    "username": "@david",
+    "description": "my post",
+    "likes": [
+      "@elazar"
+    ],
+    "comments": [
+      {
+        "username": "@elazar",
+        "description": "זה פוסט מעניין!"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "username": "@yakov",
+    "description": "my post",
+    "likes": [],
+    "comments": []
+  }
+]
