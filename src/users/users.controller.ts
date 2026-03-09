@@ -151,7 +151,7 @@ export class UsersController {
   async followUser(@Body() followUserDto: FollowUserDto) {
     // In a real app, you'd get the current user from JWT token
     // For now, expect it in the body
-    const user = await this.usersService.followUser(followUserDto.username, followUserDto.username);
+    const user = await this.usersService.followUser(followUserDto.currentUser!, followUserDto.username);
     if (!user) {
       throw new NotFoundException('User not found or invalid follow action');
     }
