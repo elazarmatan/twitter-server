@@ -61,7 +61,7 @@ export class PostsService {
   }
 
   async findAll(): Promise<Post[]> {
-    return await this.readPosts();
+    return (await this.readPosts()).reverse();
   }
 
   async findOne(id: number): Promise<Post | null> {
