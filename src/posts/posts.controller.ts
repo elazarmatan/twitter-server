@@ -11,6 +11,8 @@ import {
   UseGuards,
   UploadedFile,
   UseInterceptors,
+  Logger,
+  Req,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PostsService } from './posts.service';
@@ -28,6 +30,7 @@ import { extname, join } from 'path';
 // @UseGuards(JwtAuthGuard)
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
+  private readonly logger = new Logger(PostsController.name);
 
   @Post()
   @UseInterceptors(
@@ -60,16 +63,22 @@ export class PostsController {
   async create(
     @Body() createPostDto: CreatePostDto,
     @UploadedFile() file?: any,
+    @Req() req?: any,
   ) {
     if (file) {
-      createPostDto.image = `/uploads/posts/${file.filename}`;
+      // store full URL so client doesn't need to prefix
+      createPostDto.image = `${req.protocol}://${req.get('host')}/uploads/posts/${file.filename}`;
     }
-    return await this.postsService.create(createPostDto);
+    const result = await this.postsService.create(createPostDto);
+    this.logger.log(`create response:`, JSON.stringify(result));
+    return result;
   }
 
   @Get()
   async findAll() {
-    return await this.postsService.findAll();
+    const result = await this.postsService.findAll();
+    this.logger.log(`findAll response:`, JSON.stringify(result));
+    return result;
   }
 
   @Get(':id')
@@ -78,6 +87,7 @@ export class PostsController {
     if (!post) {
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
+    this.logger.log(`findOne response:`, JSON.stringify(post));
     return post;
   }
 
@@ -112,14 +122,16 @@ export class PostsController {
     @Param('id') id: string,
     @Body() updatePostDto: UpdatePostDto,
     @UploadedFile() file?: any,
+    @Req() req?: any,
   ) {
     if (file) {
-      updatePostDto.image = `/uploads/posts/${file.filename}`;
+      updatePostDto.image = `${req.protocol}://${req.get('host')}/uploads/posts/${file.filename}`;
     }
     const post = await this.postsService.update(+id, updatePostDto);
     if (!post) {
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
+    this.logger.log(`update response:`, JSON.stringify(post));
     return post;
   }
 
@@ -129,7 +141,9 @@ export class PostsController {
     if (!success) {
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
-    return { message: `Post with ID ${id} removed successfully` };
+    const result = { message: `Post with ID ${id} removed successfully` };
+    this.logger.log(`remove response:`, JSON.stringify(result));
+    return result;
   }
 
   @Put(':id/like')
@@ -143,6 +157,7 @@ async likePost(
     throw new NotFoundException(`Post with ID ${id} not found`);
   }
 
+  this.logger.log(`likePost response:`, JSON.stringify(post));
   return post;
 }
 
@@ -157,6 +172,7 @@ async likePost(
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
 
+    this.logger.log(`unlikePost response:`, JSON.stringify(post));
     return post;
   }
 
@@ -171,6 +187,7 @@ async likePost(
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
 
+    this.logger.log(`addComment response:`, JSON.stringify(post));
     return post;
   }
 
@@ -185,6 +202,7 @@ async likePost(
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
 
+    this.logger.log(`removeComment response:`, JSON.stringify(post));
     return post;
   }
 }

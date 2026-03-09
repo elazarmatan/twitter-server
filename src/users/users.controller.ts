@@ -9,10 +9,12 @@ import {
   NotFoundException,
   UploadedFile,
   UseInterceptors,
+  Logger,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FollowUserDto } from './dto/follow-user.dto';
 import { ApiTags, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -21,6 +23,7 @@ import { extname, join } from 'path';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+  private readonly logger = new Logger(UsersController.name);
 
   @Post()
   @UseInterceptors(
@@ -62,12 +65,16 @@ export class UsersController {
     if (file) {
       createUserDto.image = `/uploads/users/${file.filename}`;
     }
-    return await this.usersService.create(createUserDto);
+    const result = await this.usersService.create(createUserDto);
+    this.logger.log(`create response:`, JSON.stringify(result));
+    return result;
   }
 
   @Get()
   async findAll() {
-    return await this.usersService.findAll();
+    const result = await this.usersService.findAll();
+    this.logger.log(`findAll response:`, JSON.stringify(result));
+    return result;
   }
 
   @Get(':id')
@@ -76,6 +83,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
+    this.logger.log(`findOne response:`, JSON.stringify(user));
     return user;
   }
 
@@ -124,6 +132,7 @@ export class UsersController {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
+    this.logger.log(`update response:`, JSON.stringify(user));
     return user;
   }
 
@@ -133,6 +142,42 @@ export class UsersController {
     if (!success) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    return { message: `User with ID ${id} removed successfully` };
+    const result = { message: `User with ID ${id} removed successfully` };
+    this.logger.log(`remove response:`, JSON.stringify(result));
+    return result;
+  }
+
+  @Post('follow')
+  async followUser(@Body() followUserDto: FollowUserDto) {
+    // In a real app, you'd get the current user from JWT token
+    // For now, expect it in the body
+    const user = await this.usersService.followUser(followUserDto.username, followUserDto.username);
+    if (!user) {
+      throw new NotFoundException('User not found or invalid follow action');
+    }
+    this.logger.log(`follow response:`, JSON.stringify(user));
+    return user;
+  }
+
+  @Post('unfollow')
+  async unfollowUser(@Body() followUserDto: FollowUserDto) {
+    // In a real app, you'd get the current user from JWT token
+    // For now, expect it in the body
+    const user = await this.usersService.unfollowUser(followUserDto.username, followUserDto.username);
+    if (!user) {
+      throw new NotFoundException('User not found or invalid unfollow action');
+    }
+    this.logger.log(`unfollow response:`, JSON.stringify(user));
+    return user;
+  }
+
+  @Get('findByUsername/:username')
+  async findByUsername(@Param('username') username: string) {
+    const user = await this.usersService.findByUsername(username);
+    if (!user) {
+      throw new NotFoundException(`User ${username} not found`);
+    }
+    this.logger.log(`findByUsername response:`, JSON.stringify(user));
+    return user;
   }
 }

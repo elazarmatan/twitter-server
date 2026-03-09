@@ -1,42 +1,26 @@
 [
-  {
-    "id": 1,
-    "username": "@elazar",
-    "description": "my post 1",
-    "likes": [],
-    "comments": [],
-    "tags": []
-  },
-  {
-    "id": 3,
-    "username": "@david",
-    "description": "my post",
-    "likes": [
-      "@elazar"
-    ],
-    "comments": [
-      {
-        "username": "@elazar",
-        "description": "זה פוסט מעניין!"
-      }
-    ],
-    "tags": []
-  },
-  {
-    "id": 4,
-    "username": "@yakov",
-    "description": "my post",
-    "likes": [],
-    "comments": [],
-    "tags": []
-  },
-  {
-    "id": 5,
-    "username": "@elazar",
-    "description": "kadjsj",
-    "likes": [],
-    "comments": [],
-    "tags": [],
-    "image": "/uploads/posts/1772730243496-513146691.jpg"
-  }
+{"id":1,"username":"@elazar","description":"my post 1","likes":[],"comments":[],"tags":[]},
+{"id":2,"username":"@lior","description":"Had a great day!","likes":[],"comments":[],"tags":[]},
+{"id":3,"username":"@dvir","description":"Check out this new code snippet","likes":[],"comments":[],"tags":[]},
+{"id":4,"username":"@shira","description":"Beautiful sunset today","likes":[],"comments":[],"tags":[]},
+{"id":5,"username":"@noam","description":"Just finished reading a book","likes":[],"comments":[],"tags":[]},
+{"id":6,"username":"@itay","description":"Workout time!","likes":[],"comments":[],"tags":[]},
+{"id":7,"username":"@omer","description":"Vacation vibes","likes":[],"comments":[],"tags":[]},
+{"id":8,"username":"@maya","description":"New artwork completed","likes":[],"comments":[],"tags":[]},
+{"id":9,"username":"@tomer","description":"Coding in progress","likes":[],"comments":[],"tags":[]},
+{"id":10,"username":"@yuval","description":"Game night with friends","likes":[],"comments":[],"tags":[]},
+{"id":11,"username":"@roni","description":"Movie marathon today","likes":[],"comments":[],"tags":[]},
+{"id":12,"username":"@gal","description":"Latest gadget review","likes":[],"comments":[],"tags":[]},
+{"id":13,"username":"@adi","description":"Reading a new book","likes":[],"comments":[],"tags":[]},
+{"id":14,"username":"@niv","description":"Travel memories","likes":[],"comments":[],"tags":[]},
+{"id":15,"username":"@omri","description":"Photography practice","likes":[],"comments":[],"tags":[]},
+{"id":16,"username":"@yael","description":"Art and design ideas","likes":[],"comments":[],"tags":[]},
+{"id":17,"username":"@uri","description":"Startup hustle","likes":[],"comments":[],"tags":[]},
+{"id":18,"username":"@dana","description":"Cooking something new","likes":[],"comments":[],"tags":[]},
+{"id":19,"username":"@bar","description":"Gaming session","likes":[],"comments":[],"tags":[]},
+{"id":20,"username":"@ofek","description":"Sports training","likes":[],"comments":[],"tags":[]},
+{"id":21,"username":"@elazar","description":"my post 2","likes":[],"comments":[],"tags":[]},
+{"id":22,"username":"@lior","description":"Another day in paradise","likes":[],"comments":[],"tags":[]},
+{"id":23,"username":"@dvir","description":"Learning new JS tricks","likes":[],"comments":[],"tags":[]},
+{"id":24,"username":"@shira","description":"Photography tips","likes":[],"comments":[],"tags":[]}
 ]

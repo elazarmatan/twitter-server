@@ -8,4 +8,6 @@ export class User {
   birthDate?: string;
   bio?: string;
   image?: string;
+  followers?: string[]; // array of usernames
+  following?: string[]; // array of usernames
 }
