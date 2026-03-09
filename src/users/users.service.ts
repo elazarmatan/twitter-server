@@ -18,6 +18,18 @@ export class UsersService {
       if (users.length > 0) {
         this.nextId = Math.max(...users.map(u => u.id)) + 1;
       }
+      // ensure optional fields exist
+      users.forEach(user => {
+        if (!('image' in user)) {
+          user.image = undefined;
+        }
+        if (!('followers' in user)) {
+          user.followers = [];
+        }
+        if (!('following' in user)) {
+          user.following = [];
+        }
+      });
       return users;
     } catch (error) {
       return [];
@@ -46,6 +58,8 @@ export class UsersService {
       birthDate: createUserDto.birthDate,
       bio: createUserDto.bio,
       image: createUserDto.image,
+      followers: [],
+      following: [],
     };
     users.push(newUser);
     await this.writeUsers(users);
@@ -105,5 +119,76 @@ export class UsersService {
     }
     await this.writeUsers(filteredUsers);
     return true;
+  }
+
+  async followUser(currentUsername: string, userToFollowUsername: string): Promise<User | null> {
+    const users = await this.readUsers();
+    
+    const currentUserIndex = users.findIndex(u => u.username === currentUsername);
+    const userToFollowIndex = users.findIndex(u => u.username === userToFollowUsername);
+    
+    if (currentUserIndex === -1 || userToFollowIndex === -1) {
+      return null;
+    }
+
+    // Prevent following yourself
+    if (currentUsername === userToFollowUsername) {
+      return null;
+    }
+
+    // Add to following list
+    if (!users[currentUserIndex].following) {
+      users[currentUserIndex].following = [];
+    }
+    if (!users[currentUserIndex].following.includes(userToFollowUsername)) {
+      users[currentUserIndex].following.push(userToFollowUsername);
+    }
+
+    // Add to followers list
+    if (!users[userToFollowIndex].followers) {
+      users[userToFollowIndex].followers = [];
+    }
+    if (!users[userToFollowIndex].followers.includes(currentUsername)) {
+      users[userToFollowIndex].followers.push(currentUsername);
+    }
+
+    await this.writeUsers(users);
+    const { password, ...result } = users[currentUserIndex] as any;
+    return result;
+  }
+
+  async unfollowUser(currentUsername: string, userToUnfollowUsername: string): Promise<User | null> {
+    const users = await this.readUsers();
+    
+    const currentUserIndex = users.findIndex(u => u.username === currentUsername);
+    const userToUnfollowIndex = users.findIndex(u => u.username === userToUnfollowUsername);
+    
+    if (currentUserIndex === -1 || userToUnfollowIndex === -1) {
+      return null;
+    }
+
+    // Remove from following list
+    if (users[currentUserIndex].following) {
+      users[currentUserIndex].following = users[currentUserIndex].following!.filter(u => u !== userToUnfollowUsername);
+    }
+
+    // Remove from followers list
+    if (users[userToUnfollowIndex].followers) {
+      users[userToUnfollowIndex].followers = users[userToUnfollowIndex].followers!.filter(u => u !== currentUsername);
+    }
+
+    await this.writeUsers(users);
+    const { password, ...result } = users[currentUserIndex] as any;
+    return result;
+  }
+
+  async findByUsername(username: string): Promise<User | null> {
+    const users = await this.readUsers();
+    const user = users.find(u => u.username === username);
+    if (!user) {
+      return null;
+    }
+    const { password, ...result } = user as any;
+    return result;
   }
 }

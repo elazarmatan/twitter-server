@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 import { IsString, IsEmail, IsPhoneNumber, IsOptional, IsDateString } from "class-validator";
 
 export class CreateUserDto {
@@ -43,6 +44,7 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsDateString()
+  @Transform(({ value }) => value === '' ? undefined : value)
   birthDate?: string;
 
   @ApiPropertyOptional({
